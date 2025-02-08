@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Upload and Capture</title>
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #video, #canvas {
+            width: 100%;
+            max-width: 640px;
+            margin-top: 10px;
+        }
+        .button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .verification-result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .verified {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .not-verified {
+            background-color: #f44336;
+            color: white;
+        }
+        #captureSection {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="section">
+            <h2>Upload Reference Image</h2>
+            <input type="file" id="fileInput" accept="image/*">
+            <button class="button" onclick="uploadFile()">Upload</button>
+            <div id="uploadResult"></div>
+        </div>
+
+        <div class="section" id="captureSection">
+            <h2>Camera Verification</h2>
+            <video id="video" autoplay></video>
+            <canvas id="canvas" style="display: none;"></canvas>
+            <button class="button" id="captureButton" onclick="capture()">Take Photo</button>
+            <div id="captureResult"></div>
+        </div>
+
+        <div id="verificationResult" style="display: none;" class="verification-result">
+        </div>
+
+        <div class="section">
+            <button class="button" id="submitButton" onclick="submitSession()" style="background-color: #f44336;" disabled>Submit and Close</button>
+        </div>
+    </div>
+
+    <script>
+        let stream = null;
+        
+        // Initialize camera
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        const captureButton = document.getElementById('captureButton');
+        const submitButton = document.getElementById('submitButton');
+
+        function startCamera() {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(videoStream => {
+                    stream = videoStream;
+                    video.srcObject = stream;
+                })
+                .catch(err => {
+                    console.error("Error accessing camera:", err);
+                });
+        }
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+            }
+        }
+
+        startCamera();
+
+        // File upload function
+        function uploadFile() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            if (!file) {
+                alert('Please select a file first');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('uploadResult').innerHTML = 
+                    `<p>${data.message}</p><p>Reference image saved</p>`;
+                fileInput.disabled = true;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('uploadResult').innerHTML = 
+                    '<p>Error uploading file</p>';
+            });
+        }
+
+        // Camera capture function
+        function capture() {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            const image = canvas.toDataURL('image/jpeg');
+
+            fetch('/capture', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ image: image })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('captureResult').innerHTML = 
+                    `<p>${data.message}</p>`;
+                
+                // Stop the camera and disable capture button
+                stopCamera();
+                captureButton.disabled = true;
+                
+                // Show verification result
+                const verificationDiv = document.getElementById('verificationResult');
+                verificationDiv.style.display = 'block';
+                verificationDiv.innerHTML = data.verified ? 'VERIFIED' : 'NOT VERIFIED';
+                verificationDiv.className = `verification-result ${data.verified ? 'verified' : 'not-verified'}`;
+                
+                // Enable submit button
+                submitButton.disabled = false;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('captureResult').innerHTML = 
+                    '<p>Error capturing image</p>';
+            });
+        }
+
+        // Submit and terminate session function
+        function submitSession() {
+            if (confirm('Are you sure you want to submit and end the session?')) {
+                fetch('/submit', {
+                    method: 'POST',
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert('Session terminated successfully. You can close this window.');
+                    window.close();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error terminating session');
+                });
+            }
+        }
+    </script>
+</body>
+</html> 
