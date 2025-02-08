@@ -80,3 +80,16 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .border-border {
+    border-color: var(--border);
+  }
+  .bg-background {
+    background-color: var(--background);
+  }
+  .text-foreground {
+    color: var(--foreground);
+  }
+  /* Add other custom classes as needed */
+}
