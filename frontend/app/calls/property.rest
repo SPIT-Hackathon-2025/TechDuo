@@ -1,0 +1,39 @@
+### Create a new property
+POST http://localhost:3000/api/property
+Content-Type: application/json
+
+{
+  "pid": "12345",
+  "lid": "67890",
+  "images": ["image1.jpg", "image2.jpg"],
+  "title": "Luxury Apartment",
+  "location": "New York, NY",
+  "size": "3BHK",
+  "sqft": 1200,
+  "price": 2500,
+  "type": "apartment",
+  "rid": "98765"
+}
+
+### Get all properties
+GET http://localhost:3000/api/property
+
+### Update a property by pid
+PUT http://localhost:3000/api/property
+Content-Type: application/json
+
+{
+  "pid": "12345",
+  "updates": {
+    "price": 2600,
+    "title": "Luxury Apartment - Updated"
+  }
+}
+
+### Delete a property by pid
+DELETE http://localhost:3000/api/property
+Content-Type: application/json
+
+{
+  "pid": "12345"
+}

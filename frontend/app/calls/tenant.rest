@@ -1,0 +1,35 @@
+### ✅ Create a new tenant
+POST http://localhost:3000/api/tenant
+Content-Type: application/json
+
+{
+  "tid": "T1",
+  "name": "Alice Johnson",
+  "properties": ["P3", "P4"],
+  "verification": true,
+  "publicKey": "xyz789"
+}
+
+### ✅ Get all tenants
+GET http://localhost:3000/api/tenant
+Content-Type: application/json
+
+### ✅ Update a tenant (by `tid`)
+PUT http://localhost:3000/api/tenant
+Content-Type: application/json
+
+{
+  "tid": "T1",
+  "updates": {
+    "name": "Alice Updated",
+    "verification": false
+  }
+}
+
+### ✅ Delete a tenant (by `tid`)
+DELETE http://localhost:3000/api/tenant
+Content-Type: application/json
+
+{
+  "tid": "T1"
+}

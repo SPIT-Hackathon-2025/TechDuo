@@ -1,0 +1,50 @@
+### ✅ CREATE a new escrow account
+POST http://localhost:3000/api/escrow
+Content-Type: application/json
+
+{
+  "eid": "E12345",
+  "lid": "L9876",
+  "tid": "T5678",
+  "rid": "R4567",
+  "transactions": [
+    {
+      "amount": 500,
+      "transactionHash": "0xabc12345def6789",
+      "transactionType": "credit"
+    }
+  ],
+  "fine": 0,
+  "balance": 500
+}
+
+### ✅ READ all escrow accounts
+GET http://localhost:3000/api/escrow
+Content-Type: application/json
+
+
+### ✅ UPDATE an escrow account (e.g., adding a new transaction)
+PUT http://localhost:3000/api/escrow
+Content-Type: application/json
+
+{
+  "eid": "E12345",
+  "updates": {
+    "transactions": [
+      {
+        "amount": 300,
+        "transactionHash": "0xxyz98765abc4321",
+        "transactionType": "debit"
+      }
+    ],
+    "balance": 200
+  }
+}
+
+### ✅ DELETE an escrow account by `eid`
+DELETE http://localhost:3000/api/escrow
+Content-Type: application/json
+
+{
+  "eid": "E12345"
+}

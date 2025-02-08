@@ -1,0 +1,36 @@
+### ✅ Create a new contract
+POST http://localhost:3000/api/contract
+Content-Type: application/json
+
+{
+  "cid": "C1",
+  "pid": "P1",
+  "lid": "L1",
+  "rentAmount": 1200,
+  "paymentFrequency": "monthly",
+  "securityDeposit": 2400
+}
+
+### ✅ Get all contracts
+GET http://localhost:3000/api/contract
+Content-Type: application/json
+
+### ✅ Update a contract (by `cid`)
+PUT http://localhost:3000/api/contract
+Content-Type: application/json
+
+{
+  "cid": "C1",
+  "updates": {
+    "rentAmount": 1300,
+    "paymentFrequency": "quarterly"
+  }
+}
+
+### ✅ Delete a contract (by `cid`)
+DELETE http://localhost:3000/api/contract
+Content-Type: application/json
+
+{
+  "cid": "C1"
+}

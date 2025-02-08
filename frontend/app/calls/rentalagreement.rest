@@ -1,0 +1,40 @@
+### ✅ Create a new rental agreement
+POST http://localhost:3000/api/rentalagreement
+Content-Type: application/json
+
+{
+  "rid": "R1",
+  "pid": "P1",
+  "lid": "L1",
+  "tid": "T1",
+  "eid": "E1",
+  "cid": "C1",
+  "is_active": true,
+  "content": "Tenant must not sublet the property without permission.",
+  "startDate": "2025-01-01",
+  "endDate": "2026-01-01"
+}
+
+### ✅ Get all rental agreements
+GET http://localhost:3000/api/rentalagreement
+Content-Type: application/json
+
+### ✅ Update a rental agreement (by `rid`)
+PUT http://localhost:3000/api/rentalagreement
+Content-Type: application/json
+
+{
+  "rid": "R1",
+  "updates": {
+    "is_active": false,
+    "content": "Tenant must maintain cleanliness."
+  }
+}
+
+### ✅ Delete a rental agreement (by `rid`)
+DELETE http://localhost:3000/api/rentalagreement
+Content-Type: application/json
+
+{
+  "rid": "R1"
+}
