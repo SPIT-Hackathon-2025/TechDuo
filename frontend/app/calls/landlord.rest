@@ -1,0 +1,35 @@
+### ✅ Create a new landlord
+POST http://localhost:3000/api/landlord
+Content-Type: application/json
+
+{
+  "lid": "L1",
+  "name": "John Doe",
+  "properties": ["P1", "P2"],
+  "verification": true,
+  "publicKey": "abc123"
+}
+
+### ✅ Get all landlords
+GET http://localhost:3000/api/landlord
+Content-Type: application/json
+
+### ✅ Update a landlord (by `lid`)
+PUT http://localhost:3000/api/landlord
+Content-Type: application/json
+
+{
+  "lid": "L1",
+  "updates": {
+    "name": "John Updated",
+    "verification": false
+  }
+}
+
+### ✅ Delete a landlord (by `lid`)
+DELETE http://localhost:3000/api/landlord
+Content-Type: application/json
+
+{
+  "lid": "L1"
+}

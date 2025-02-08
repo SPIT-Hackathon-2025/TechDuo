@@ -1,0 +1,41 @@
+### ✅ Create a new dispute
+POST http://localhost:3000/api/dispute
+Content-Type: application/json
+
+{
+  "did": "D1",
+  "pid": "P1",
+  "rid": "R1",
+  "title": "Broken Window Issue",
+  "description": "The window in the living room is broken, and the landlord is refusing to fix it.",
+  "opinion": "Tenant believes landlord is responsible",
+  "images": ["https://example.com/image1.jpg", "https://example.com/image2.jpg"],
+  "status": "open",
+  "arbitrator_verdict": "",
+  "amount_Decided": 0
+}
+
+### ✅ Get all disputes
+GET http://localhost:3000/api/dispute
+Content-Type: application/json
+
+### ✅ Update a dispute (by `did`)
+PUT http://localhost:3000/api/dispute
+Content-Type: application/json
+
+{
+  "did": "D1",
+  "updates": {
+    "status": "closed",
+    "arbitrator_verdict": "Landlord must repair within 7 days",
+    "amount_Decided": 150
+  }
+}
+
+### ✅ Delete a dispute (by `did`)
+DELETE http://localhost:3000/api/dispute
+Content-Type: application/json
+
+{
+  "did": "D1"
+}

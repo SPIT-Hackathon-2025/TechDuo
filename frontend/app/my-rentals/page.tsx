@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Building2, Calendar, AlertCircle, DollarSign, FileText } from "lucide-react";
+import Link from "next/link";
 
 export default function MyRentalsPage() {
   return (
@@ -110,9 +111,11 @@ export default function MyRentalsPage() {
           <div className="text-center py-8">
             <AlertCircle className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
             <p className="text-muted-foreground">No active disputes</p>
-            <Button variant="outline" className="mt-4">
-              File a Dispute
-            </Button>
+            <Link href="/dispute-form">
+              <Button variant="outline" className="mt-4">
+                File a Dispute
+              </Button>
+            </Link>
           </div>
         </CardContent>
       </Card>
