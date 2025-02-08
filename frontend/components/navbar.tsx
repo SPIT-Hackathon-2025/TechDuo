@@ -11,7 +11,7 @@ export function Navbar() {
       <div className="flex h-16 items-center px-4 container mx-auto">
         <Link href="/" className="flex items-center space-x-2 mr-6">
           <Building2 className="h-6 w-6" />
-          <span className="font-bold text-xl">PokeRent</span>
+          <span className="font-bold text-xl">ToRent</span>
         </Link>
         
         <div className="flex items-center space-x-4 flex-1">
