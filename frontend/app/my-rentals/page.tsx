@@ -1,10 +1,152 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Building2, Calendar, AlertCircle, DollarSign, FileText } from "lucide-react";
-import Link from "next/link";
+// import { Calendar, DollarSign, FileText } from "lucide-react";
+import { Calendar, DollarSign, FileText, Gavel } from "lucide-react";
+
+interface RentalAgreement {
+  rid: string;
+  pid: string;
+  lid: string;
+  tid: string;
+  eid: string;
+  cid: string;
+  is_active: boolean;
+  content: string;
+  startDate: string;
+  endDate: string;
+  createdAt: string;
+}
+
+interface PropertyDetails {
+  _id: string;
+  pid: string;
+  lid: string;
+  images: string[];
+  title: string;
+  location: string;
+  size?: string;
+  sqft?: number;
+  price?: number;
+  type?: string;
+  rid: string;
+  createdAt: string;
+}
+
+interface LandlordDetails {
+  lid: string;
+  name: string;
+  properties: string[];
+  verification: boolean;
+  publicKey: string;
+}
+
+interface Dispute {
+  did: string;
+  pid: string;
+  rid: string;
+  title: string;
+  description: string;
+  opinion?: string;
+  images: string[];
+  status: "open" | "closed";
+  arbitrator_verdict?: string;
+  amount_Decided: number;
+  createdAt: string;
+}
+
+interface EscrowTransaction {
+  _id: string;
+  amount: number;
+  transactionHash: string;
+  transactionType: "debit" | "credit";
+}
+
+interface Escrow {
+  _id: string;
+  eid: string;
+  lid: string;
+  tid: string;
+  rid: string;
+  transactions?: EscrowTransaction[];
+  fine: number;
+  balance: number;
+  createdAt: string;
+  __v: number;
+}
+
+interface RentalAgreementWithDetails extends RentalAgreement {
+  propertyDetails?: PropertyDetails;
+  landlordDetails?: LandlordDetails;
+  escrow?: Escrow[];
+}
 
 export default function MyRentalsPage() {
+  const [agreements, setAgreements] = useState<RentalAgreementWithDetails[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [disputes, setDisputes] = useState<Dispute[]>([]);
+
+  useEffect(() => {
+    const fetchAgreements = async () => {
+      try {
+        const response = await fetch("/api/rentalagreement");
+        if (!response.ok) {
+          throw new Error("Failed to fetch rental agreements");
+        }
+
+        const data: RentalAgreement[] = await response.json();
+
+        const enrichedAgreements = await Promise.all(
+          data.map(async (agreement) => {
+            let propertyDetails: PropertyDetails | undefined;
+            let landlordDetails: LandlordDetails | undefined;
+            let escrow: Escrow[] = [];
+
+            try {
+              const propertyRes = await fetch(`/api/property?pid=${agreement.pid}`);
+              if (propertyRes.ok) {
+                propertyDetails = await propertyRes.json();
+              }
+
+              const landlordRes = await fetch(`/api/landlord?lid=${agreement.lid}`);
+              if (landlordRes.ok) {
+                landlordDetails = await landlordRes.json();
+              }
+
+              const escrowRes = await fetch(`/api/escrow?rid=${agreement.rid}`);
+              if (escrowRes.ok) {
+                escrow = await escrowRes.json();
+                console.log(escrow);
+              }
+              const disputesRes = await fetch("/api/dispute");
+              if (!disputesRes.ok) throw new Error("Failed to fetch disputes");
+              const disputesData: Dispute[] = await disputesRes.json();
+              setDisputes(disputesData);
+      
+            } catch (error) {
+              console.error("Error fetching additional details:", error);
+            }
+
+            return { ...agreement, propertyDetails, landlordDetails, escrow};
+          })
+        );
+
+        setAgreements(enrichedAgreements);
+        setLoading(false);
+      } catch (err) {
+        console.error(err);
+        setError("Error fetching agreements.");
+        setLoading(false);
+      }
+    };
+
+    fetchAgreements();
+  }, []);
+  console.log(agreements);  
   return (
     <div className="container mx-auto py-8 space-y-8">
       <div className="flex justify-between items-center">
@@ -15,45 +157,67 @@ export default function MyRentalsPage() {
         </Button>
       </div>
 
-      {/* Active Rentals */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {[1, 2].map((rental) => (
-          <Card key={rental}>
-            <CardHeader className="pb-2">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h3 className="text-xl font-semibold">Luxury Downtown Apartment</h3>
-                  <p className="text-sm text-muted-foreground">123 Main St, New York, NY</p>
-                </div>
-                <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
-                  Active
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
+        {loading ? (
+          <p className="text-center text-muted-foreground">Loading rentals...</p>
+        ) : error ? (
+          <p className="text-center text-red-500">{error}</p>
+        ) : agreements.length > 0 ? (
+          agreements.map((rental) => (
+            <Card key={rental.pid}>
+              <CardHeader className="pb-2">
+                <div className="flex justify-between items-start">
                   <div>
-                    <p className="text-sm font-medium">Lease Period</p>
-                    <p className="text-sm text-muted-foreground">Jan 2024 - Dec 2024</p>
+                    <h3 className="text-xl font-semibold">{rental.propertyDetails?.title}</h3>
+                    <p className="text-sm text-muted-foreground">{rental.propertyDetails?.location}</p>
+                  </div>
+                  <Badge className={`bg-${rental.is_active ? "green" : "red"}-100 text-${rental.is_active ? "green" : "red"}-800`}>
+                    {rental.is_active ? "Active" : "Inactive"}
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                    <div>
+                      <p className="text-sm font-medium">Lease Period</p>
+                      <p className="text-sm text-muted-foreground">{rental.startDate} - {rental.endDate}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <DollarSign className="h-4 w-4 text-muted-foreground" />
+                    <div>
+                      <p className="text-sm font-medium">Monthly Rent</p>
+                      <p className="text-sm text-muted-foreground">${rental.propertyDetails?.price}</p>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <DollarSign className="h-4 w-4 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm font-medium">Monthly Rent</p>
-                    <p className="text-sm text-muted-foreground">$2,500</p>
-                  </div>
-                </div>
-              </div>
 
-              <div className="flex items-center justify-between pt-4 border-t">
-                <div className="space-y-1">
-                  <p className="text-sm font-medium">Next Payment Due</p>
-                  <p className="text-sm text-muted-foreground">February 1, 2024</p>
-                </div>
-                <div className="space-x-2">
+                {/* Escrow Details */}
+                {rental.escrow && rental.escrow.length > 0 && (
+                  <div className="border-t pt-4">
+                    <h4 className="text-md font-semibold mt-2">Escrow Transactions:</h4>
+                    {rental.escrow.map((escrowItem) => (
+                      <div key={escrowItem._id} className="mt-2">
+                        <p className="text-sm font-medium">Balance: ${escrowItem.balance}</p>
+                        {escrowItem.transactions && escrowItem.transactions.length > 0 ? (
+                          <ul className="text-sm text-muted-foreground">
+                            {escrowItem.transactions.map((txn, index) => (
+                              <li key={txn._id} className="border-b py-1">
+                                {txn.transactionType.toUpperCase()} - ${txn.amount} | TX: {txn.transactionHash}
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="text-sm text-muted-foreground">No transactions available.</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between pt-4 border-t">
                   <Button variant="outline" size="sm">
                     <FileText className="h-4 w-4 mr-2" />
                     Agreement
@@ -63,62 +227,51 @@ export default function MyRentalsPage() {
                     Pay Rent
                   </Button>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          ))
+        ) : (
+          <p className="text-center text-muted-foreground">No rental agreements found.</p>
+        )}
       </div>
-
-      {/* Payment History */}
-      <Card>
-        <CardHeader>
-          <h2 className="text-xl font-semibold">Recent Payments</h2>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {[1, 2, 3].map((payment) => (
-              <div
-                key={payment}
-                className="flex items-center justify-between p-4 rounded-lg border"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded bg-primary/10 flex items-center justify-center">
-                    <DollarSign className="h-5 w-5 text-primary" />
+      <h2 className="text-2xl font-bold mt-8">Disputes</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+        {loading ? (
+          <p className="text-center text-muted-foreground">Loading disputes...</p>
+        ) : disputes.length > 0 ? (
+          disputes.map((dispute) => (
+            <Card key={dispute.did}>
+              <CardHeader className="pb-2">
+                <h3 className="text-xl font-semibold">{dispute.title}</h3>
+                <Badge className={`bg-${dispute.status === "open" ? "orange" : "gray"}-100 text-${dispute.status === "open" ? "orange" : "gray"}-800`}>
+                  {dispute.status.charAt(0).toUpperCase() + dispute.status.slice(1)}
+                </Badge>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">{dispute.description}</p>
+                {dispute.arbitrator_verdict && (
+                  <div className="mt-2">
+                    <h4 className="text-md font-semibold">Arbitrator Verdict:</h4>
+                    <p className="text-sm text-muted-foreground">{dispute.arbitrator_verdict}</p>
                   </div>
-                  <div>
-                    <p className="font-medium">January 2024 Rent</p>
-                    <p className="text-sm text-muted-foreground">
-                      Transaction: 0xabc...def
-                    </p>
-                  </div>
+                )}
+                <div className="flex items-center gap-2">
+                  <DollarSign className="h-4 w-4 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">${dispute.amount_Decided}</p>
                 </div>
-                <div className="text-right">
-                  <p className="font-medium">$2,500</p>
-                  <p className="text-sm text-green-600">Completed</p>
+                <div className="flex items-center justify-between pt-4 border-t">
+                  <Button variant="outline" size="sm">
+                    <Gavel className="h-4 w-4 mr-2" />
+                    View Dispute
+                  </Button>
                 </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Active Disputes */}
-      <Card>
-        <CardHeader>
-          <h2 className="text-xl font-semibold">Active Disputes</h2>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8">
-            <AlertCircle className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-            <p className="text-muted-foreground">No active disputes</p>
-            <Link href="/dispute-form">
-              <Button variant="outline" className="mt-4">
-                File a Dispute
-              </Button>
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
+              </CardContent>
+            </Card>
+          ))
+        ) : (
+          <p className="text-center text-muted-foreground">No disputes found.</p>
+        )}
+      </div>
     </div>
   );
 }

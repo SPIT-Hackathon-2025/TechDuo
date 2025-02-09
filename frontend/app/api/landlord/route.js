@@ -34,12 +34,26 @@ export async function POST(req) {
 }
 
 // ✅ READ all landlords
-export async function GET() {
+export async function GET(req) {
   try {
     await connectToDatabase();
-    const landlords = await Landlord.find({});
 
+    const { searchParams } = new URL(req.url);
+    const lid = searchParams.get("lid");
+
+    if (lid) {
+      const landlord = await Landlord.findOne({ lid });
+
+      if (!landlord) {
+        return Response.json({ error: "Landlord not found" }, { status: 404 });
+      }
+
+      return Response.json(landlord, { status: 200 });
+    }
+
+    const landlords = await Landlord.find({});
     return Response.json(landlords, { status: 200 });
+
   } catch (error) {
     return Response.json({ error: "Error fetching landlords: " + error.message }, { status: 500 });
   }
