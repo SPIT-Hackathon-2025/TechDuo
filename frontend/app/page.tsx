@@ -16,7 +16,14 @@ export default function LandingPage() {
       setShowGuestOptions(!showGuestOptions);
     } else if (role === "tenant") {
       router.push("/landing-page");
-    } else {
+    } 
+    else if (role === "landlord") {
+      router.push("/landlord-landing-page");
+    }
+    else if (role === "arbitrator") {
+      router.push("/arbitrator-landing-page");
+    }
+    else {
       router.push(`/login?role=${role}`);
     }
   };
@@ -110,6 +117,13 @@ export default function LandingPage() {
           </Button>
 
           <Button 
+            onClick={() => handleLogin("arbitrator")} 
+            className="w-44 h-12"
+          >
+            Login as Arbitrator
+          </Button>
+
+          <Button 
             onClick={() => handleLogin("landlord")} 
             className="w-44 h-12"
           >
@@ -148,6 +162,12 @@ export default function LandingPage() {
                     className="block w-full px-4 py-3 text-left text-gray-200 hover:bg-gray-700 transition-colors"
                   >
                     Login as Landlord
+                  </button>
+                  <button
+                    onClick={() => handleGuestLogin("arbitrator")}
+                    className="block w-full px-4 py-3 text-left text-gray-200 hover:bg-gray-700 transition-colors"
+                  >
+                    Login as Arbitrator
                   </button>
                 </motion.div>
               )}
