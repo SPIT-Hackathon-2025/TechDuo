@@ -3,27 +3,21 @@ import json
 from flask import Flask, request, jsonify
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+from flask_cors import CORS
 from pydantic import BaseModel, Field, ValidationError
 from groq import Groq
-from dotenv import load_dotenv  # ✅ Import dotenv
-
-# ✅ Load environment variables from .env
-load_dotenv()
 
 app = Flask(__name__)
+CORS(app)  
 
 # 🔹 MongoDB Connection
-MONGO_URI = os.getenv("MONGO_URI", "your_default_mongo_uri_here")
+MONGO_URI = "mongodb+srv://hmaikap:hmaikap@cluster0.fxlcl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 mongo_client = MongoClient(MONGO_URI)
 db = mongo_client.get_database("ToRentData")
-collection = db.get_collection("DisputeTable")
+collection = db.get_collection("disputes")
 
-# 🔹 Groq API Client (Using API Key from .env)
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-if not GROQ_API_KEY:
-    raise ValueError("Missing GROQ_API_KEY in environment variables!")
-
-groq_client = Groq(api_key=GROQ_API_KEY)
+# 🔹 Groq API Client
+groq_client = Groq(api_key="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")
 
 # ✅ Structured Response Model
 class DisputeAnalysis(BaseModel):
@@ -79,12 +73,12 @@ def post_dispute_analysis():
         # Get JSON data from request
         data = request.json
 
-        if not data or "_id" not in data:
+        if not data or "did" not in data:
             return jsonify({"error": "Missing '_id' field in request body"}), 400
 
-        dispute_id = data["_id"]
+        dispute_id = data["did"]
         try:
-            query = {"_id": ObjectId(dispute_id)}
+            query = {"did": dispute_id}
         except Exception:
             return jsonify({"error": "Invalid ObjectId format"}), 400
 
