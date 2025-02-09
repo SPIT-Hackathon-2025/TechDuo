@@ -44,7 +44,8 @@ export default function ArbitratorLandingPage() {
           throw new Error('Failed to fetch disputes');
         }
         const data = await response.json();
-        setDisputes(data);
+        // Update this line to access the disputes array from the response
+        setDisputes(data.disputes || []);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
@@ -86,8 +87,8 @@ export default function ArbitratorLandingPage() {
       console.error('Error updating dispute:', error);
     }
   };
+
   const handleResolveWithAI = async () => {
-    // Find the first open dispute
     const openDispute = disputes.find(d => d.status === 'open');
     if (!openDispute) {
       alert("No open disputes to resolve.");
@@ -111,9 +112,9 @@ export default function ArbitratorLandingPage() {
       alert(`AI Analysis:\nResponsible Party: ${result.analysis.responsible_party}\nResolution: ${result.analysis.resolution_details}`);
     } catch (error) {
       console.error('Error resolving dispute with AI:', error);
+      alert('Failed to get AI analysis. Please try again.');
     }
   };
-  
 
   if (loading) {
     return <div className="container mx-auto p-4">Loading...</div>;
