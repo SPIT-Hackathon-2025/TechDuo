@@ -1,0 +1,75 @@
+require("../artifacts/contracts/RentalEscrow.sol/RentalEscrow.json").abi,"0x5FbDB2315678afecb367f032d93F642f64180aa3" );
+const rentalEscrow = await ethers.getContractAt(
+const { ethers } = require("hardhat");
+console.log("RentalEscrow Contract:", rentalEscrow);
+const upkeepNeeded = await rentalEscrow.callStatic.checkUpkeep("0x");
+);
+  "0x5FbDB2315678afecb367f032d93F642f64180aa3" // Your deployed contract address
+  require("../artifacts/contracts/RentalEscrow.sol/RentalEscrow.json").abi, // Correct ABI
+const rentalEscrow = await ethers.getContractAt(
+const { ethers } = require("hardhat");
+);
+  "0x5FbDB2315678afecb367f032d93F642f64180aa3" // Your deployed contract address
+  require("../artifacts/contracts/RentalEscrow.sol/RentalEscrow.json").abi, // Correct ABI
+const rentalEscrow = await ethers.getContractAt(
+const { ethers } = require("hardhat");
+console.log("Contract functions:", Object.keys(rentalEscrow));
+console.log("RentalEscrow Contract:", rentalEscrow);
+console.log("Upkeep Needed:", upkeepNeeded);
+const upkeepNeeded = await rentalEscrow.callStatic.checkUpkeep("0x");
+console.log("Contract ABI functions:", artifacts.abi.map(f => f.name));
+const artifacts = await hre.artifacts.readArtifact("RentalEscrow");
+console.log("Contract Balance:", balance.toString());
+const balance = await rentalEscrow.getBalance();
+);
+  "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+  "RentalEscrow", 
+const rentalEscrow = await ethers.getContractAt(
+console.log(Object.keys(rentalEscrow));
+console.log("Does checkUpkeep exist?", typeof rentalEscrow.checkUpkeep === "function");
+console.log("Contract functions:", Object.keys(rentalEscrow));
+console.log("✅ Contract attached at:", rentalEscrow?.target);
+console.log(Object.keys(rentalEscrow));
+console.log("✅ Contract attached at:", rentalEscrow.target);
+const rentalEscrow = RentalEscrow.attach(contractAddress);
+const RentalEscrow = await ethers.getContractFactory("RentalEscrow");
+const contractAddress = contractInfo.address;
+const contractInfo = JSON.parse(fs.readFileSync("./contractAddress.json"));
+const fs = require("fs");
+console.log(upkeepData);
+const upkeepData = await rentalEscrow.callStatic.checkUpkeep("0x");
+const upkeepData = await rentalEscrow.callStatic.c
+console.log("✅ Contract attached at:", rentalEscrow.target);
+const rentalEscrow = RentalEscrow.attach(contractAddress);
+const RentalEscrow = await ethers.getContractFactory("RentalEscrow");
+const contractAddress = contractInfo.address;
+const contractInfo = JSON.parse(fs.readFileSync("./contractAddress.json"));
+const fs = require("fs");
+const accounts = await ethers.provider.listAccounts();
+await ethers.provider.listAccounts();
+console.log("Contract attached successfully:", rentalEscrow.address);
+const rentalEscrow = await RentalEscrow.attach(contractAddress);
+const RentalEscrow = await ethers.getContractFactory("RentalEscrow");
+const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+clear
+cls
+console.log("Contract attached successfully:",
+lEscrow = await RentalEscrow.attach(contractAddress);
+const RentalEscrow = await etheconst renta
+const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+const rentalEscrow = await RentalEscrow.attach(contractAddress);
+const upkeepData = await rentalEscrow.callStatic.checkUpkeep("0x");
+console.log("Upkeep Needed:", upkeepData.upkeepNeeded);
+const rentalEscrow = await RentalEscrow.attach(contractAddress);
+const RentalEscrow = await ethers.getContractFactory("RentalEscrow");
+const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+console.log("Perform Data:", upkeepData.performData);
+console.log("Upkeep Needed:", upkeepData.upkeepNeeded);
+const RentalEscrow = await ethers.getContractFactory("RentalEscrow");
+const rentalEscrow = await RentalEscrow.attach(contractAddress);
+const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"; 
+console.log("Upkeep Needeconsole.log("Perform Data:", upkeepData.performData);
+const upkeepData = await rentalEscrow.callStatic.checkUpkeep("0x");
+talEscrow = await RentalEscrow.attach(contractAddress);
+const RentalEscrow = await etconst ren
+const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"; 
