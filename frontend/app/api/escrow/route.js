@@ -51,16 +51,23 @@ export async function POST(req) {
 }
 
 // ✅ READ all escrow accounts
-export async function GET() {
+export async function GET(req) {
   try {
     await connectToDatabase();
-    const escrows = await Escrow.find({});
+
+    const url = new URL(req.url);
+    const eid = url.searchParams.get("eid");
+
+    let query = eid ? { eid } : {}; // If eid is provided, filter by it
+
+    const escrows = await Escrow.find(query);
 
     return Response.json(escrows, { status: 200 });
   } catch (error) {
     return Response.json({ error: "Error fetching escrow accounts: " + error.message }, { status: 500 });
   }
 }
+
 
 // ✅ UPDATE an escrow account by `eid`
 export async function PUT(req) {

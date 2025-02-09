@@ -14,7 +14,7 @@ const rentalAgreementSchema = new mongoose.Schema({
   startDate: { type: String, required: true }, // Start Date (stored as a string)
   endDate: { type: String, required: true }, // End Date (stored as a string)
   createdAt: { type: String, default: () => new Date().toISOString() } // Created At (stored as a string)
-});
+}); 
 
 // Create a Mongoose model (only if it doesn't already exist)
 const RentalAgreement = mongoose.models.RentalAgreement || mongoose.model("RentalAgreement", rentalAgreementSchema);

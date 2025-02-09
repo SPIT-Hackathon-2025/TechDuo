@@ -53,15 +53,33 @@ export async function POST(req) {
 }
 
 // ✅ READ all properties
-export async function GET() {
+export async function GET(req) {
   try {
     await connectToDatabase();
+
+    const { searchParams } = new URL(req.url);
+    const pid = searchParams.get("pid");
+
+    if (pid) {
+      // Fetch a single property by `pid`
+      const property = await Property.findOne({ pid });
+
+      if (!property) {
+        return Response.json({ error: "Property not found" }, { status: 404 });
+      }
+
+      return Response.json(property, { status: 200 });
+    }
+
+    // Fetch all properties if `pid` is not provided
     const properties = await Property.find({});
     return Response.json(properties, { status: 200 });
+
   } catch (error) {
     return Response.json({ error: "Error fetching properties: " + error.message }, { status: 500 });
   }
 }
+
 
 // ✅ UPDATE a property by `pid`
 export async function PUT(req) {

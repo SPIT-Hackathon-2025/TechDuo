@@ -31,8 +31,8 @@ export function PropertyGrid() {
         if (response.ok) {
           // Ensure properties have at least one image
           const formattedProperties = data
-            .filter((property) => property.images?.length > 0)
-            .map((property) => ({
+            .filter((property: { images: string | any[]; }) => property.images?.length > 0)
+            .map((property: { images: any[]; }) => ({
               ...property,
               image: property.images[0] // Take the first image from the array
             }));
